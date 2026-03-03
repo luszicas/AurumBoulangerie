@@ -1,0 +1,184 @@
+﻿@model xFood.Web.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Atelier Administrativo";
+    var userRole = Context.Session.GetString("UserRole");
+    bool isAdmin = userRole == "Admin";
+}
+
+<div class="container" style="padding-top: 140px; padding-bottom: 80px;">
+
+    <div class="row align-items-end mb-5">
+        <div class="col-md-8">
+            <p class="text-muted fst-italic mb-0" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Bonjour, Chef.</p>
+            <h1 class="display-4 font-serif text-light">
+                Visão <span style="color: var(--gold-accent); font-style: italic;">Geral</span>
+            </h1>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="date-badge">
+                <span class="d-block text-uppercase small text-muted" style="letter-spacing: 2px;">Data de Hoje</span>
+                <span class="font-serif fs-5 text-light">@DateTime.Now.ToString("dd 'de' MMMM, yyyy")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <a href="/AdminOrders" class="text-decoration-none">
+                <div class="admin-card h-100">
+                    <div class="d-flex justify-content-between">
+                        <div class="icon-circle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                        </div>
+                        @if (Model.PendingOrders > 0)
+                        {
+                            <span class="text-danger fs-3">•</span>
+                        }
+                    </div>
+                    <div class="kpi-value">@Model.PendingOrders</div>
+                    <div class="kpi-label">Pedidos na Fila</div>
+                    @if (Model.PendingOrders > 0)
+                    {
+                        <small class="text-muted mt-2 d-block fst-italic">Atenção na cozinha</small>
+                    }
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <div class="admin-card h-100">
+                <div class="icon-circle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <div class="kpi-value">@Model.TodayRevenue.ToString("C0")</div>
+                <div class="kpi-label">Receita do Dia</div>
+                <small class="text-success mt-2 d-block">↑ Vendas confirmadas</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <a href="/Products" class="text-decoration-none">
+                <div class="admin-card h-100">
+                    <div class="d-flex justify-content-between">
+                        <div class="icon-circle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        </div>
+                        @if (Model.LowStockProducts > 0)
+                        {
+                            <span class="text-warning fs-3">•</span>
+                        }
+                    </div>
+                    <div class="kpi-value">@Model.LowStockProducts</div>
+                    <div class="kpi-label">Estoque Baixo</div>
+                    <small class="text-muted mt-2 d-block fst-italic">Verificar inventário</small>
+                </div>
+            </a>
+        </div>
+
+        @if (isAdmin)
+        {
+            <div class="col-md-3">
+                <a href="/Users" class="text-decoration-none">
+                    <div class="admin-card h-100 admin-highlight">
+                        <div class="icon-circle icon-circle-dark">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <div class="kpi-value text-white">@Model.TotalUsers</div>
+                        <div class="kpi-label text-white-50">Staff Ativo</div>
+                        <small class="text-white-50 mt-2 d-block">Gerenciar equipe →</small>
+                    </div>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-3">
+                <div class="admin-card h-100 d-flex align-items-center justify-content-center text-center opacity-50">
+                    <div>
+                        <small class="text-muted text-uppercase ls-2">Aurum Boulangerie</small>
+                        <div class="font-serif mt-2 fst-italic">Acesso Restrito</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 class="font-serif mb-4 text-light" style="font-size: 1.5rem;">Produção Recente</h3>
+
+            <div class="premium-table-card">
+                <table class="table-aurum">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Comanda</th>
+                            <th>Cliente</th>
+                            <th>Data</th>
+                            <th>Estado</th>
+                            <th>Total</th>
+                            <th class="text-end pe-4">Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentOrders.Any())
+                        {
+                            @foreach (var order in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td class="ps-4 font-serif fs-5 text-light">#@order.OrderNumber</td>
+                                    <td class="text-muted">@order.CustomerName</td>
+                                    <td class="text-muted small">
+                                        @order.OrderDate.ToString("dd/MM") <span style="opacity:0.5">às @order.OrderDate.ToString("HH:mm")</span>
+                                    </td>
+                                    <td>
+                                        @if (order.Status == "Pendente")
+                                        {
+                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning">Aguardando</span>
+                                        }
+                                        else if (order.Status == "Pronto")
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success">Pronto</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary">@order.Status</span>
+                                        }
+                                    </td>
+                                    <td class="font-serif text-light">@order.TotalAmount.ToString("C")</td>
+                                    <td class="text-end pe-4">
+                                        <a href="/AdminOrders" class="text-decoration-none" style="color: var(--gold-accent); font-size: 1.2rem;">&rarr;</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted fst-italic">
+                                    O forno ainda está frio. Nenhum pedido hoje.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mt-5 mt-lg-0">
+            <div class="admin-card p-4">
+                <h4 class="font-serif mb-4 text-center text-light">Gestão Rápida</h4>
+                <p class="text-muted text-center small mb-4 fst-italic">
+                    "A qualidade começa na organização."
+                </p>
+
+                <a href="/Categories" class="btn-quick">Categorias do Menu</a>
+                <a href="/Products" class="btn-quick"> Adicionar Novo Prato</a>
+
+                @if (isAdmin)
+                {
+                    <a href="/Users" class="btn-quick">Adicionar Novo Colaborador</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

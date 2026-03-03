@@ -1,0 +1,136 @@
+﻿@model IEnumerable<xFood.Domain.Entities.Order>
+@{
+    ViewData["Title"] = "KDS - Cozinha";
+}
+
+<div class="kds-container">
+
+    <div class="d-flex justify-content-between align-items-end mb-5 container">
+        <div>
+            <a href="@Url.Action("Index", "Admin")" class="text-decoration-none text-muted small text-uppercase mb-3 d-inline-flex align-items-center hover-gold" style="letter-spacing: 2px; transition: color 0.3s;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Voltar ao Painel
+            </a>
+
+            <div class="mt-2">
+                <span class="text-uppercase text-muted small" style="letter-spacing: 2px;">Kitchen Display System</span>
+                <h2 class="display-6 font-serif text-light">
+                    Pedidos em Andamento
+                </h2>
+            </div>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-dark border border-secondary text-light p-2 shadow-sm">
+                Atualizado às @DateTime.Now.ToString("HH:mm")
+            </span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row g-4">
+            @foreach (var order in Model)
+            {
+                // Define a classe de borda baseada no status
+                var statusClass = order.Status switch
+                {
+                    "Pendente" => "kds-border-pending",
+                    "Em Preparo" => "kds-border-prep",
+                    "Pronto" => "kds-border-ready",
+                    _ => "kds-border-done"
+                };
+
+                var opacityClass = order.Status == "Entregue" ? "opacity-50" : "";
+
+                <div class="col-md-6 col-lg-4 @opacityClass fade-in-up">
+                    <div class="kds-card h-100 shadow-sm @statusClass">
+
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="kds-number">#@order.OrderNumber</span>
+                                <div class="text-muted small mt-1">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    @order.OrderDate.ToString("HH:mm")
+                                </div>
+                            </div>
+
+                            @if (order.Status == "Pendente")
+                            {
+                                <span class="kds-pill kds-pill-pending">Aguardando</span>
+                            }
+                            else if (order.Status == "Em Preparo")
+                            {
+                                <span class="kds-pill kds-pill-prep">Preparando</span>
+                            }
+                            else if (order.Status == "Pronto")
+                            {
+                                <span class="kds-pill kds-pill-ready">Pronto</span>
+                            }
+                            else
+                            {
+                                <span class="kds-pill kds-pill-done">@order.Status</span>
+                            }
+                        </div>
+
+                        <div class="mb-3 pb-3 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+                            <span class="text-uppercase small text-muted" style="font-size: 0.65rem; letter-spacing: 1px;">Cliente</span>
+                            <h5 class="mb-0 text-light font-serif">@order.CustomerName</h5>
+                        </div>
+
+                        <div class="mb-4">
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var item in order.Items)
+                                {
+                                    <li class="d-flex align-items-center mb-2">
+                                        <span class="kds-qty">@item.Quantity</span>
+                                        <span class="ms-2 text-light">@item.ProductName</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="small text-muted">Total</span>
+                                <span class="fw-bold" style="color: var(--gold-accent);">@order.TotalAmount.ToString("C")</span>
+                            </div>
+
+                            @if (order.Status != "Entregue")
+                            {
+                                <a href="@Url.Action("AdvanceStatus", new { id = order.Id })" class="btn btn-kds-action w-100">
+                                    @if (order.Status == "Pendente")
+                                    {
+                                        <span>Iniciar Preparo &rarr;</span>
+                                    }
+                                    else if (order.Status == "Em Preparo")
+                                    {
+
+                                        <span>Finalizar &rarr;</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span>Entregar &rarr;</span>
+                                    }
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-dark w-100 text-muted small border-0" disabled>Arquivado</button>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh a cada 30 segundos
+        setTimeout(function(){ window.location.reload(1); }, 30000);
+    </script>
+}

@@ -1,0 +1,151 @@
+﻿@model IEnumerable<xFood.Application.DTOs.ProductDto>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Gerenciar Produtos";
+    var categories = (SelectList)ViewBag.Categories;
+    var role = Context.Session.GetString("UserRole");
+    bool isAdmin = string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+    bool isManager = string.Equals(role, "Manager", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="container" style="padding-top: 130px; padding-bottom: 60px;">
+
+    <a href="/Admin" class="btn-back-elegant mb-3">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Painel
+    </a>
+
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <span class="text-uppercase text-muted small" style="letter-spacing: 2px;">Backoffice</span>
+            <h2 class="display-6 font-serif text-light">Catálogo de Produtos</h2>
+        </div>
+        <a class="btn btn-aurum" href="@Url.Action("Create")">
+            + Novo Produto
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center mb-4" style="background: rgba(46, 125, 50, 0.2); color: #81c784; border-left: 4px solid #66bb6a !important;">
+            <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span>@TempData["Success"]</span>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="premium-table-card mb-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted text-uppercase mb-1">Categoria</label>
+                <select name="categoryId" class="form-select form-control-dark" asp-items="categories">
+                    <option value="">Todas as Coleções</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label small text-muted text-uppercase mb-1">Buscar Item</label>
+                <input type="text" name="q" class="form-control form-control-dark"
+                       value="@Context.Request.Query["q"]" placeholder="Digite o nome..." />
+            </div>
+            <div class="col-md-4 text-end">
+                <a class="text-muted small text-decoration-none me-3 text-uppercase" href="@Url.Action("Index")">Limpar</a>
+                <button class="btn btn-aurum-outline btn-sm">Filtrar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="premium-table-card">
+        <table class="table-aurum">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 80px;">Item</th>
+                    <th>Detalhes</th>
+                    <th>Categoria</th>
+                    <th class="text-end">Valor</th>
+                    <th class="text-center">Estoque</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="text-center py-3">
+                            @if (!string.IsNullOrEmpty(p.ImageUrl))
+                            {
+                                <img src="@p.ImageUrl" alt="thumb" class="thumb-premium" />
+                            }
+                            else
+                            {
+                                <div class="thumb-premium-placeholder">
+                                    <small>IMG</small>
+                                </div>
+                            }
+                        </td>
+
+                        <td class="align-middle">
+                            <strong class="font-serif text-light" style="font-size: 1.1rem;">
+                                @p.Name
+                            </strong>
+                        </td>
+
+                        <td class="align-middle">
+                            <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary fw-normal text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">
+                                @p.CategoryName
+                            </span>
+                        </td>
+
+                        <td class="text-end align-middle">
+                            <span style="color: var(--gold-accent); font-weight: 600; font-size: 1.1rem;">
+                                @p.Price.ToString("C")
+                            </span>
+                        </td>
+
+                        <td class="text-center align-middle">
+                            @if (p.Stock < 5)
+                            {
+                                <span class="text-danger small fw-bold">Baixo (@p.Stock)</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">@p.Stock un.</span>
+                            }
+                        </td>
+
+                        <td class="text-end align-middle">
+                            <div class="btn-group">
+                                <a href="@Url.Action("Details", new { id = p.Id })" class="btn btn-link text-muted p-1" title="Ver">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </a>
+
+                                @if (isAdmin || isManager)
+                                {
+                                    <a href="@Url.Action("Edit", new { id = p.Id })" class="btn btn-link text-warning p-1" title="Editar">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </a>
+                                }
+
+                                @if (isAdmin)
+                                {
+                                    <a href="@Url.Action("Delete", new { id = p.Id })" class="btn btn-link text-danger p-1" title="Excluir">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <p class="text-muted">Nenhum produto encontrado.</p>
+                <a href="@Url.Action("Create")" class="btn btn-aurum-outline btn-sm">Cadastrar</a>
+            </div>
+        }
+    </div>
+</div>

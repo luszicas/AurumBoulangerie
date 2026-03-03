@@ -1,0 +1,59 @@
+﻿@model xFood.Application.DTOs.CategoryDto
+@{
+    ViewData["Title"] = "Editar Categoria";
+}
+
+<div class="container" style="padding-top: 150px; padding-bottom: 80px;">
+
+    <a href="@Url.Action("Index")" class="btn-back-elegant mb-4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Voltar para Lista
+    </a>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="text-center mb-5">
+                <span class="text-uppercase text-muted small" style="letter-spacing: 2px;">Gestão de Menu</span>
+                <h2 class="display-6 font-serif text-light">Editar Categoria</h2>
+            </div>
+
+            <div class="premium-table-card p-5">
+                <form method="post">
+
+                    <div asp-validation-summary="All" class="alert alert-danger border-0 mb-4" style="background: rgba(220, 53, 69, 0.1); color: #ff6b6b; display:none"></div>
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase small text-muted mb-1">Nome da Seção</label>
+                        <input asp-for="Name" class="form-control form-control-dark" placeholder="Ex: Boulangerie" />
+                        <span class="text-danger small" asp-validation-for="Name"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase small text-muted mb-1">Descrição</label>
+                        <textarea asp-for="Description" class="form-control form-control-dark" rows="3" placeholder="Breve descrição da categoria..."></textarea>
+                        <span class="text-danger small" asp-validation-for="Description"></span>
+                    </div>
+
+                    <div class="mt-5 d-flex justify-content-between align-items-center pt-4 border-top border-secondary border-opacity-25">
+                        <a class="text-muted small text-decoration-none text-uppercase hover-gold" href="@Url.Action("Index")">
+                            Cancelar
+                        </a>
+                        <button class="btn btn-aurum px-5 shadow-sm">
+                            Salvar Alterações
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
