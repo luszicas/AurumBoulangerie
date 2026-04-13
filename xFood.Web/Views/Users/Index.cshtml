@@ -1,0 +1,144 @@
+﻿@model IEnumerable<xFood.Application.DTOs.UserDto>
+@{
+    ViewData["Title"] = "Gestão de Usuários";
+    var role = Context.Session.GetString("UserRole");
+    bool isAdmin = string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+    bool isManager = string.Equals(role, "Manager", StringComparison.OrdinalIgnoreCase);
+    var status = ((string)ViewBag.Status ?? "active").ToLower();
+}
+
+<div class="container" style="padding-top: 150px; padding-bottom: 80px;">
+
+    <a href="/Admin" class="btn-back-elegant mb-3">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+        Painel
+    </a>
+
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <span class="text-uppercase text-muted small" style="letter-spacing: 2px;">Backoffice</span>
+            <h2 class="display-6 font-serif text-light">Equipe e Acessos</h2>
+        </div>
+        <a class="btn btn-aurum" href="@Url.Action("Create")">
+            + Novo Usuário
+        </a>
+    </div>
+
+    <div class="mb-4 d-flex gap-2 border-bottom border-secondary border-opacity-25 pb-3">
+        <a class="btn btn-sm px-3 @(status == "active" ? "btn-aurum-filled" : "btn-aurum-outline")"
+           href="@Url.Action("Index", new { status = "active" })">Ativos</a>
+
+        <a class="btn btn-sm px-3 @(status == "inactive" ? "btn-aurum-filled" : "btn-aurum-outline")"
+           href="@Url.Action("Index", new { status = "inactive" })">Inativos</a>
+
+        <a class="btn btn-sm px-3 @(status == "all" ? "btn-aurum-filled" : "btn-aurum-outline")"
+           href="@Url.Action("Index", new { status = "all" })">Todos</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center mb-4" style="background: rgba(46, 125, 50, 0.2); color: #81c784; border-left: 4px solid #66bb6a !important;">
+            <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span>@TempData["Success"]</span>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="premium-table-card">
+        <table class="table-aurum">
+            <thead>
+                <tr>
+                    <th>Colaborador</th>
+                    <th>Contato</th>
+                    <th>Função</th>
+                    <th>Status</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td class="py-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold shadow-sm"
+                                     style="width: 40px; height: 40px; font-size: 1rem; background-color: var(--gold-accent);">
+                                    @(u.Name?.Length > 0 ? u.Name.Substring(0, 1).ToUpper() : "?")
+                                </div>
+                                <div>
+                                    <strong class="text-light">@u.Name</strong>
+                                    <small class="d-block text-muted" style="font-size: 0.75rem;">Nasc: @u.DateBirth.ToString("dd/MM/yyyy")</small>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-middle"><span class="text-muted small">@u.Email</span></td>
+
+                        <td class="align-middle">
+                            <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary fw-normal text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">
+                                @(u.TypeUserDescription ?? "-")
+                            </span>
+                        </td>
+
+                        <td class="align-middle">
+                            @if (u.Active)
+                            {
+                                <span class="text-success small fw-bold">● Ativo</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">○ Inativo</span>
+                            }
+                        </td>
+
+                        <td class="text-end align-middle">
+                            <div class="btn-group">
+                                <a href="@Url.Action("Details", new { id = u.Id })" class="btn btn-link text-muted p-2" title="Ver Detalhes">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </a>
+
+                                @if (isAdmin )
+                                {
+                                    <a href="@Url.Action("Edit", new { id = u.Id })" class="btn btn-link text-warning p-2" title="Editar">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </a>
+                                }
+
+                                @if (isAdmin)
+                                {
+                                    @if (u.Active)
+                                    {
+                                        <form asp-action="SoftDelete" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@u.Id" />
+                                            <input type="hidden" name="returnStatus" value="@status" />
+                                            <button class="btn btn-link text-danger p-2" title="Desativar" onclick="return confirm('Desativar este usuário?');">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Restore" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@u.Id" />
+                                            <input type="hidden" name="returnStatus" value="@status" />
+                                            <button class="btn btn-link text-success p-2" title="Reativar" onclick="return confirm('Reativar este usuário?');">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                                            </button>
+                                        </form>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <p class="text-muted">Nenhum usuário encontrado.</p>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@model xFood.Application.DTOs.UserDto
+@{
+    ViewData["Title"] = "Detalhes do Usuário";
+    var role = Context.Session.GetString("UserRole");
+    bool isAdmin = string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase);
+    bool isManager = string.Equals(role, "Manager", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="container" style="padding-top: 150px; padding-bottom: 80px;">
+
+    <a href="@Url.Action("Index")" class="btn-back-elegant mb-4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Voltar para Lista
+    </a>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="premium-table-card p-5">
+
+                <div class="d-flex align-items-center gap-4 mb-5 border-bottom border-secondary border-opacity-25 pb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold shadow-sm"
+                         style="width: 80px; height: 80px; font-size: 2.5rem; background-color: var(--gold-accent);">
+                        @(Model.Name?.Length > 0 ? Model.Name.Substring(0, 1).ToUpper() : "?")
+                    </div>
+
+                    <div>
+                        <h2 class="mb-1 text-light" style="font-family: 'Playfair Display', serif;">@Model.Name</h2>
+                        <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary fw-normal text-uppercase" style="letter-spacing: 1px;">
+                            @Model.TypeUserDescription
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-sm-6">
+                        <label class="text-uppercase small text-muted d-block mb-1" style="letter-spacing: 1px;">E-mail</label>
+                        <p class="mb-0 text-light lead fs-6">@Model.Email</p>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="text-uppercase small text-muted d-block mb-1" style="letter-spacing: 1px;">Nascimento</label>
+                        <p class="mb-0 text-light lead fs-6">@Model.DateBirth.ToString("dd/MM/yyyy")</p>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="text-uppercase small text-muted d-block mb-1" style="letter-spacing: 1px;">Status da Conta</label>
+                        <p class="mb-0 @(Model.Active ? "text-success" : "text-danger") fw-bold">
+                            @(Model.Active ? "● Ativa" : "○ Desativada")
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-top border-secondary border-opacity-25 d-flex justify-content-end gap-2">
+                    @if (isAdmin || isManager)
+                    {
+                        <a class="btn btn-aurum px-4 shadow-sm" href="@Url.Action("Edit", new { id = Model.Id })">
+                            Editar Dados
+                        </a>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

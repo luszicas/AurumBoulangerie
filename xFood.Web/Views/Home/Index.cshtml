@@ -1,0 +1,204 @@
+﻿@model IEnumerable<xFood.Application.DTOs.ProductDto>
+@{
+    ViewData["Title"] = "Aurum Boulangerie";
+}
+
+<header class="hero-premium">
+    <div class="hero-overlay-dark">
+        <div class="container text-center fade-in-up">
+            <span class="hero-badge">Since 1998</span>
+            <h1 class="hero-title display-3">Sabor que Inspira,<br>Momentos que Ficam.</h1>
+            <p class="hero-subtitle">Do grão selecionado à fermentação lenta. Descubra a verdadeira arte da boulangerie francesa em São Paulo.</p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="#menu-section" class="btn-aurum-filled">Ver Cardápio</a>
+                <a href="#about" class="btn-aurum-border">Nossa História</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section id="about" class="section-about-premium py-5">
+    <div class="container py-5">
+        <div class="row align-items-center g-5 mb-5">
+            <div class="col-lg-6 order-2 order-lg-1 fade-in-up">
+                <span class="text-uppercase small" style="letter-spacing: 3px; color: var(--gold-accent);">
+                    Nossa Essência
+                </span>
+                <h2 class="about-heading mt-2">
+                    Onde a Tradição encontra<br>o Conforto Moderno.
+                </h2>
+                <p class="about-text">
+                    Desde 1998, a Aurum Boulangerie não é apenas uma padaria, é um refúgio no coração de São Paulo.
+                    Nascemos da paixão pela fermentação natural francesa e evoluímos para criar um espaço onde
+                    o aroma de café fresco se mistura com a elegância de um ambiente pensado para você desacelerar.
+                </p>
+                <div class="mt-4">
+                    <a href="#menu-section" class="btn-pill-aurum">Descubra Nossos Sabores</a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 order-1 order-lg-2 fade-in-up">
+                <div class="position-relative">
+                    <img src="~/img/ambiente.png" alt="Interior Aurum" class="about-image-main">
+                    <div class="position-absolute bg-black p-3 rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+                         style="bottom: -30px; left: -30px; width: 120px; height: 120px; border: 1px solid var(--gold-accent);">
+                        <div class="text-center" style="line-height: 1;">
+                            <span class="d-block text-white" style="font-family: var(--font-heading); font-size: 2rem;">25</span>
+                            <span class="text-uppercase small text-white" style="font-size: 0.6rem; letter-spacing: 1px;">Anos de<br>Tradição</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-5">
+            <div class="col-md-4 fade-in-up" style="animation-delay: 0.2s;">
+                <div class="value-card">
+                    <img src="~/img/cafe-especiais.png" class="img-fluid rounded-3 mb-4" style="height: 200px; width: 100%; object-fit: cover;" alt="Café">
+                    <h3 class="value-title">Cafés Especiais</h3>
+                    <p class="value-desc text-muted">Grãos selecionados de micro-lotes brasileiros, torrados para realçar notas de chocolate e caramelo.</p>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in-up" style="animation-delay: 0.4s;">
+                <div class="value-card">
+                    <img src="~/img/fermentacao-natural.png" class="img-fluid rounded-3 mb-4" style="height: 200px; width: 100%; object-fit: cover;" alt="Pães">
+                    <h3 class="value-title">Fermentação Natural</h3>
+                    <p class="value-desc text-muted">Nosso Levain é cultivado há 25 anos, garantindo pães de casca rústica, miolo leve e digestão perfeita.</p>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in-up" style="animation-delay: 0.6s;">
+                <div class="value-card">
+                    <img src="~/img/ambiente-conforto.png" class="img-fluid rounded-3 mb-4" style="height: 200px; width: 100%; object-fit: cover;" alt="Ambiente">
+                    <h3 class="value-title">Ambiente e Conforto</h3>
+                    <p class="value-desc text-muted">Wi-fi de alta velocidade, poltronas de veludo e uma playlist suave. O escritório ou a sala de estar que você merece.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="menu-section" style="scroll-margin-top: 100px;"></div>
+
+<section class="py-5" style="background-color: #0F0E0D; border-top: 1px solid rgba(255,255,255,0.05);">
+    <div class="container py-5">
+
+        <div class="text-center mb-5">
+            <span class="d-block mb-1" style="font-family: 'Pinyon Script', cursive; font-size: 2rem; color: var(--gold-accent);">
+                Sabores frescos do dia
+            </span>
+            <h2 class="display-5 text-uppercase text-light" style="font-family: 'Playfair Display', serif; letter-spacing: 2px;">
+                Menu da Estação
+            </h2>
+        </div>
+
+        @* --- LÓGICA DE EXIBIÇÃO --- *@
+
+        @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
+        {
+            @* MODO PESQUISA: MOSTRA AVISO, ESCONDE FILTROS *@
+            <div class="text-center mb-5">
+                <h4 class="text-muted font-serif">
+                    Exibindo resultados para: <span style="color: var(--gold-accent);">"@ViewBag.SearchTerm"</span>
+                </h4>
+                <a href="/" class="btn btn-sm btn-outline-light rounded-pill mt-2">Limpar Busca</a>
+            </div>
+        }
+        else
+        {
+            @* MODO NORMAL: MOSTRA FILTROS *@
+            <div id="menu1" class="filter-nav d-flex flex-wrap justify-content-center gap-3 mb-5">
+                <a href="javascript:void(0)" onclick="filterSelection('all')" class="filter-link active" id="btn-all">Todos</a>
+                <a href="javascript:void(0)" onclick="filterSelection('Boulangerie')" class="filter-link" id="btn-boulangerie">Boulangerie</a>
+                <a href="javascript:void(0)" onclick="filterSelection('Pâtisserie')" class="filter-link" id="btn-patisserie">Pâtisserie</a>
+                <a href="javascript:void(0)" onclick="filterSelection('Café & Barista')" class="filter-link" id="btn-cafe">Café & Barista</a>
+                <a href="javascript:void(0)" onclick="filterSelection('Brunch')" class="filter-link" id="btn-brunch">Brunch</a>
+            </div>
+        }
+
+        <div class="row g-4" id="product-container">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var p in Model)
+                {
+                    <div class="col-md-6 col-lg-4 filter-item fade-in-up" data-category="@p.CategoryName">
+                        <div class="product-card-luxury">
+
+                            <span class="category-floating-badge">@p.CategoryName</span>
+
+                            <div class="card-img-wrapper">
+                                @if (!string.IsNullOrEmpty(p.ImageUrl))
+                                {
+                                    <img src="@p.ImageUrl" alt="@p.Name" class="card-img-luxury" />
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-dark text-muted">
+                                        <span style="font-family: 'Playfair Display'; font-style: italic;">Sem Imagem</span>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="card-body-luxury">
+                                <h3 class="product-title-luxury">@p.Name</h3>
+
+                                <p class="product-desc-luxury text-muted small">
+                                    @(p.Description ?? "Uma deliciosa criação artesanal.")
+                                </p>
+
+                                <span class="product-price-luxury">@p.Price.ToString("C")</span>
+
+                                <div class="d-flex justify-content-center gap-2 mt-3">
+                                    <a href="@Url.Action("Add", "Cart", new { id = p.Id })"
+                                       class="btn btn-aurum-filled text-uppercase"
+                                       style="font-size: 0.7rem; letter-spacing: 1px; padding: 10px 20px;">
+                                        Adicionar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fs-5">Nenhum produto encontrado.</p>
+                    <a href="/" class="btn btn-aurum-border mt-3">Voltar ao Cardápio</a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script>
+    function filterSelection(category) {
+        var x, i;
+        x = document.getElementsByClassName("filter-item");
+        if (category == "all") category = "";
+
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+            if (x[i].getAttribute('data-category').indexOf(category) > -1 || category == "") {
+                x[i].style.display = "block";
+            }
+        }
+
+        var btns = document.getElementsByClassName("filter-link");
+        for (i = 0; i < btns.length; i++) {
+            btns[i].classList.remove("active");
+        }
+
+        var btnMap = {
+            '': 'btn-all',
+            'Boulangerie': 'btn-boulangerie',
+            'Pâtisserie': 'btn-patisserie',
+            'Café & Barista': 'btn-cafe',
+            'Brunch': 'btn-brunch'
+        };
+
+        var activeBtnId = btnMap[category];
+        if(activeBtnId && document.getElementById(activeBtnId)) {
+            document.getElementById(activeBtnId).classList.add("active");
+        }
+    }
+</script>

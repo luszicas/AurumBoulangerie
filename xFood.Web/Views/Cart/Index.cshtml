@@ -1,0 +1,142 @@
+﻿@model xFood.Web.Models.ShoppingCartViewModel
+@{
+    ViewData["Title"] = "Sua Sacola";
+}
+
+<div class="container" style="padding-top: 150px; padding-bottom: 80px;">
+
+    <div class="text-center mb-5">
+        <span class="text-uppercase text-muted small" style="letter-spacing: 3px;">Aurum Boulangerie</span>
+        <h2 class="display-5 font-serif text-light">
+            Sua Sacola
+        </h2>
+    </div>
+
+    @if (Model.Items.Any())
+    {
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <div class="cart-card p-4 p-md-5">
+
+                    <div class="d-flex flex-column gap-4">
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="d-flex align-items-center justify-content-between border-bottom border-secondary border-opacity-25 pb-4 row-item-@item.ProductId">
+
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="cart-thumb">
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.ProductName" />
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex align-items-center justify-content-center h-100 text-muted small">Img</div>
+                                        }
+                                    </div>
+
+                                    <div>
+                                        <h4 class="h6 mb-2 text-light font-serif">@item.ProductName</h4>
+
+                                        <div class="qty-control">
+                                            <a href="javascript:void(0)" onclick="updateQty(@item.ProductId, -1)" class="qty-btn">-</a>
+                                            <span id="qty-@item.ProductId" class="mx-2 small fw-bold text-light">@item.Quantity</span>
+                                            <a href="javascript:void(0)" onclick="updateQty(@item.ProductId, 1)" class="qty-btn">+</a>
+                                        </div>
+
+                                        <div class="mt-1 text-muted small">
+                                            Unit: @item.Price.ToString("C")
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <div id="total-@item.ProductId" class="mb-2 fw-bold" style="color: var(--gold-accent);">
+                                        @item.Total.ToString("C")
+                                    </div>
+
+                                    <a href="@Url.Action("Remove", "Cart", new { id = item.ProductId })"
+                                       class="text-danger small text-decoration-none text-uppercase opacity-75 hover-opacity-100" style="font-size: 0.65rem; letter-spacing: 1px;">
+                                        Remover
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mt-5 pt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-uppercase text-muted small letter-spacing-2">Total do Pedido</span>
+                            <span id="grand-total" class="display-6 font-serif text-light">
+                                @Model.GrandTotal.ToString("C")
+                            </span>
+                        </div>
+
+                        <form asp-action="Checkout" method="post" class="mt-4">
+                            <div class="mb-4">
+                                <label class="form-label text-uppercase small text-muted ls-1 mb-2">Para quem devemos preparar?</label>
+                                <input type="text" name="customerName" class="form-control form-control-cart"
+                                       placeholder="Digite seu nome (Ex: Sra. Ana)" required autocomplete="off">
+                            </div>
+
+                            <div class="d-grid gap-3">
+                                <button class="btn btn-aurum-filled py-3 w-100 shadow-lg">
+                                    CONFIRMAR PEDIDO
+                                </button>
+
+                                <a href="@Url.Action("Index", "Home")#menu-section" class="btn btn-link text-muted text-decoration-none text-uppercase small ls-1">
+                                    Adicionar mais itens
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="mb-4 opacity-25 text-light">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+            </div>
+            <h3 class="h4 mb-3 font-serif text-light">Sua sacola está vazia</h3>
+            <p class="text-muted mb-4">Nossos croissants estão te esperando.</p>
+            <a href="@Url.Action("Index", "Home")#menu-section" class="btn btn-aurum-outline px-5">
+                Ver Cardápio
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function updateQty(productId, change) {
+            fetch('/Cart/UpdateQuantity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `id=${productId}&change=${change}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.isRemoved) {
+                        const row = document.querySelector(`.row-item-${productId}`);
+                        if(row) row.remove();
+                        if(data.grandTotal === "R$ 0,00") location.reload();
+                    } else {
+                        document.getElementById(`qty-${productId}`).innerText = data.quantity;
+                        document.getElementById(`total-${productId}`).innerText = data.itemTotal;
+                    }
+                    document.getElementById(`grand-total`).innerText = data.grandTotal;
+                }
+            });
+        }
+    </script>
+}
